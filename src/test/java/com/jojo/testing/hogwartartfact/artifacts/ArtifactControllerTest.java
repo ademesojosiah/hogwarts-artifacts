@@ -1,15 +1,14 @@
 package com.jojo.testing.hogwartartfact.artifacts;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jojo.testing.hogwartartfact.sytem.ArtifactNotFoundException;
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -37,6 +35,9 @@ class ArtifactControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Value("${api.endpoint.base-url}")
+    String baseUrl;
 
     List<Artifact> artifacts;
 
@@ -61,7 +62,7 @@ class ArtifactControllerTest {
         given(this.artifactService.findArtifactById("123r")).willReturn(this.artifacts.get(0));
 
         //When and then
-        this.mockMvc.perform(get("/api/v1/artifacts/123r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/artifacts/123r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.id").value("123r"));
@@ -74,7 +75,7 @@ class ArtifactControllerTest {
         given(this.artifactService.findArtifactById("123r")).willThrow(new ArtifactNotFoundException("123r"));
 
         //When and then
-        this.mockMvc.perform(get("/api/v1/artifacts/123r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/artifacts/123r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.data").isEmpty());
@@ -86,7 +87,7 @@ class ArtifactControllerTest {
         given(this.artifactService.findAllArtifacts()).willReturn(this.artifacts);
 
         //when and then
-        this.mockMvc.perform(get("/api/v1/artifacts").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/artifacts").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data", Matchers.hasSize(this.artifacts.size())));
@@ -110,7 +111,7 @@ class ArtifactControllerTest {
 
         given(artifactService.save(Mockito.any(Artifact.class))).willReturn(a);
 
-        this.mockMvc.perform(post("/api/v1/artifacts").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post(this.baseUrl+"/artifacts").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("Add Success"))
@@ -133,7 +134,7 @@ class ArtifactControllerTest {
 
         given(artifactService.updateArtifact(eq("123r"), Mockito.any(Artifact.class))).willReturn(updateArtifact);
 
-        this.mockMvc.perform(put("/api/v1/artifacts/123r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(put(this.baseUrl+"/artifacts/123r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("Update Success"))
@@ -151,7 +152,7 @@ class ArtifactControllerTest {
             given(artifactService.updateArtifact(eq("123r"),Mockito.any(Artifact.class))).willThrow(new ArtifactNotFoundException("123r"));
 
                     // when and them
-            this.mockMvc.perform(put("/api/v1/artifacts/123r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+            this.mockMvc.perform(put(this.baseUrl+"/artifacts/123r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.flag").value(false))
                     .andExpect(jsonPath("$.code").value(404))
                     .andExpect(jsonPath("$.message").value("Could not find artifact with Id " + "123r" ))
@@ -166,7 +167,7 @@ class ArtifactControllerTest {
         doNothing().when(this.artifactService).deleteArtifact("14b7391a0-3dbc-49a6-845b-54ad4c0c515");
 
 
-        this.mockMvc.perform(delete("/api/v1/artifacts/14b7391a0-3dbc-49a6-845b-54ad4c0c515").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(this.baseUrl+"/artifacts/14b7391a0-3dbc-49a6-845b-54ad4c0c515").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("Delete Success" ))
@@ -182,7 +183,7 @@ class ArtifactControllerTest {
 
         //When and Then
 
-        this.mockMvc.perform(delete("/api/v1/artifacts/14b7391a0-3dbc-49a6-845b-54ad4c0c515").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(this.baseUrl+"/artifacts/14b7391a0-3dbc-49a6-845b-54ad4c0c515").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("Could not find artifact with Id " + "14b7391a0-3dbc-49a6-845b-54ad4c0c515" ));

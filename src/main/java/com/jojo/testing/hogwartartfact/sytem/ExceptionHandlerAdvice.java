@@ -15,8 +15,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class  ExceptionHandlerAdvice {
 
-    @ExceptionHandler(ArtifactNotFoundException.class)
-    Result handleArtifactNotFoundException(ArtifactNotFoundException ex){
+    @ExceptionHandler({ArtifactNotFoundException.class})
+    Result handleArtifactNotFoundException(ArtifactNotFoundException  ex){
+        return new Result(false,404, ex.getMessage());
+    }
+
+    @ExceptionHandler({WizardNotFoundException.class})
+    Result handleWizardNotFoundException(WizardNotFoundException  ex){
         return new Result(false,404, ex.getMessage());
     }
 

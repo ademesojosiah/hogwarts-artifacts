@@ -25,7 +25,6 @@ public class ArtifactService {
     }
 
     public Artifact save(Artifact newArtifact) {
-        newArtifact.setId("1234");
         return  this.artifactRepository.save(newArtifact);
     }
 
