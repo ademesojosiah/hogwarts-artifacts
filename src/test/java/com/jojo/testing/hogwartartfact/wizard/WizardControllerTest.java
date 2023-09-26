@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,6 +43,9 @@ class WizardControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Value("${api.endpoint.base-url}")
+    String baseUrl;
+
     List<Wizard> wizards;
 
 
@@ -75,7 +79,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(get("/api/v1/wizards/123456r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/wizards/123456r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.id").value("123456r"));
@@ -91,7 +95,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(get("/api/v1/wizards/123456r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/wizards/123456r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("Could not find wizard with Id : 123456r"))
@@ -108,7 +112,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(get("/api/v1/wizards").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get(this.baseUrl+"/wizards").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("All wizards retrieved"))
@@ -134,7 +138,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(post("/api/v1/wizards").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(post(this.baseUrl+"/wizards").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("successfully added a wizard"))
@@ -161,7 +165,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(put("/api/v1/wizards/123456r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(put(this.baseUrl+"/wizards/123456r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("successfully updated wizard"))
@@ -186,7 +190,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(put("/api/v1/wizards/123456r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(put(this.baseUrl+"/wizards/123456r").contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("Could not find wizard with Id : "+ savedWizard.getId()))
@@ -209,7 +213,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(delete("/api/v1/wizards/123456r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(this.baseUrl+"/wizards/123456r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(true))
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("successfully deleted wizard with id: 123456r"))
@@ -227,7 +231,7 @@ class WizardControllerTest {
 
         //When and then
 
-        this.mockMvc.perform(delete("/api/v1/wizards/123456r").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(delete(this.baseUrl+"/wizards/123456r").accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.flag").value(false))
                 .andExpect(jsonPath("$.code").value(404))
                 .andExpect(jsonPath("$.message").value("Could not find wizard with Id : 123456r"))

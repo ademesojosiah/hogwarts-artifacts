@@ -147,7 +147,6 @@ class ArtifactServiceTest {
         Artifact updatedArtifact = new Artifact();
         updatedArtifact.setImageUrl("oldArtifact.getImageUrl()");
         updatedArtifact.setName("yeeee");
-        updatedArtifact.setId("123r");
         updatedArtifact.setDescription("updated version");
 
         //Given
